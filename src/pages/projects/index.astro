@@ -1,0 +1,9 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const projects = (await getCollection('projects')).sort((a, b) => b.data.year.localeCompare(a.data.year));
+---
+<BaseLayout title="Projects — Jingwei" description="Selected research, data, and technical prototyping work.">
+  <section class="page-intro"><p class="eyebrow">Selected work</p><h1>Tools for<br /><em>thinking clearly.</em></h1><p>Selected examples of research systems, data workflows, and technical prototypes. Case studies remain deliberately specific about what they demonstrate.</p></section>
+  <div class="content-list">{projects.map((project) => <a class="content-list-item" href={`/projects/${project.id}/`}><span class="tag">{project.data.year}</span><div><h2>{project.data.title}</h2><p>{project.data.summary}</p></div><span aria-hidden="true">↗</span></a>)}</div>
+</BaseLayout>

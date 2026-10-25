@@ -1,0 +1,14 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+export async function getStaticPaths() { const posts = await getCollection('blog'); return posts.filter(({ data }) => !data.draft).map((post) => ({ params: { id: post.id }, props: { post } })); }
+const { post } = Astro.props;
+const { Content } = await render(post);
+const readingMinutes = Math.max(1, Math.ceil(post.body.split(/\s+/).length / 220));
+const articleSchema = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.data.title, description: post.data.description, datePublished: post.data.pubDate.toISOString(), dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(), mainEntityOfPage: new URL(`/writing/${post.id}/`, 'https://jingwei.dev').toString() };
+---
+<BaseLayout title={`${post.data.title} — Jingwei`} description={post.data.description} type="article" publishedTime={post.data.pubDate}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  <header class="article-head"><p class="eyebrow">Writing / {post.data.tags.join(' · ')}</p><h1>{post.data.title}</h1><p>{post.data.description}</p><p class="tag"><time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}</time> · {readingMinutes} min read</p></header>
+  <article class="prose"><Content /></article>
+</BaseLayout>

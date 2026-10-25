@@ -1,0 +1,68 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const projects = (await getCollection('projects')).filter(({ data }) => data.featured);
+const writing = (await getCollection('blog'))
+  .filter(({ data }) => !data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+---
+
+<BaseLayout>
+  <section class="hero page-grid">
+    <div class="hero-index" aria-hidden="true">01—</div>
+    <div class="hero-copy">
+      <p class="eyebrow">Independent consultant · Melbourne / Remote</p>
+      <h1>Turning messy data into <em>useful intelligence.</em></h1>
+      <p class="lede">I build research workflows, data tools, and practical prototypes for teams working with fragmented information.</p>
+      <a class="text-link" href="/projects/">See selected work <span>↗</span></a>
+    </div>
+    <div class="signal-block" aria-label="Areas of practice">
+      <span>Signal / noise</span>
+      <strong>Make the important<br />things legible.</strong>
+    </div>
+  </section>
+
+  <section class="statement page-grid ruled-section">
+    <p class="section-label">What I do</p>
+    <div>
+      <p class="statement-copy">I combine research judgement with hands-on engineering: tracing public information, structuring uncooperative data, and designing systems that make the next decision clearer.</p>
+      <div class="service-list">
+        <span>Research intelligence</span><span>Data extraction &amp; transformation</span><span>AI-assisted workflows</span><span>Technical prototyping</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="work-section">
+    <div class="section-heading"><p class="section-label">Selected work</p><a href="/projects/">All projects <span>↗</span></a></div>
+    <div class="project-grid">
+      {projects.map((project, index) => (
+        <a class:list={['project-card', `project-card--${index}`]} href={`/projects/${project.id}/`}>
+          <span class="project-number">0{index + 1}</span>
+          <div class="project-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="project-meta"><p>{project.data.year}</p><h2>{project.data.title}</h2><p>{project.data.summary}</p></div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="writing-section ruled-section">
+    <div class="section-heading"><p class="section-label">Notes from the practice</p><a href="/writing/">All writing <span>↗</span></a></div>
+    <div class="article-list">
+      {writing.map((article) => (
+        <a class="article-row" href={`/writing/${article.id}/`}>
+          <time datetime={article.data.pubDate.toISOString()}>{article.data.pubDate.toLocaleDateString('en-AU', { month: 'short', year: 'numeric' })}</time>
+          <h2>{article.data.title}</h2>
+          <span class="article-arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="contact-band">
+    <p class="eyebrow">Have a difficult information problem?</p>
+    <h2>Let’s make it<br /><em>tractable.</em></h2>
+    <a href="mailto:hello@your-domain.com">hello@your-domain.com <span>↗</span></a>
+  </section>
+</BaseLayout>
